@@ -1,4 +1,4 @@
-# Auth
+# Risk
 Node Express MongoDB api for managing risk, opportunities and incidents.
 
 ## Installation
