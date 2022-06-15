@@ -1,0 +1,32 @@
+{
+  "name": "risk",
+  "version": "1.0.0",
+  "description": "Risk API to form part of the Core microservices",
+  "main": "index.js",
+  "scripts": {
+    "risk": "node server.js",
+    "test": "echo 'db.risk.remove({})' | mongo risks && jest"
+  },
+  "keywords": [
+    "Risk",
+    "Opportunity",
+    "and",
+    "Incident",
+    "Management"
+  ],
+  "author": "Matt Cole",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bunyan": "^1.8.15",
+    "convict": "^6.2.3",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "mongodb": "^4.6.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "supertest": "^6.2.3"
+  }
+}
