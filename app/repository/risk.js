@@ -11,45 +11,46 @@ const post = (req, next) => {
         if (err)
             next({ status: 500, msg: err }, null);
         else
-            next(null, { status: 201, data: res });
+            next(null, { status: 201, res: res });
     });
 }
 
 const patch = (req, next) => {
 
     const dbConnect = database.getDb();
-    const id = new ObjectId(req.id);
+    const _id = new ObjectId(req._id);
 
     dbConnect
         .collection('risk')
         .updateOne(
-            { _id: id },
+            { _id: _id },
             { $set: req.body},
-            { upsert: true }, 
+            { upsert: false },
             function (err, res) {
             if (err)
                 next({status: 500, msg: err}, null);
             else if (res.acknowledged === true && res.modifiedCount === 1 && res.upsertedId === null && res.upsertedCount === 0)
-                next(null, {status: 200, data: res});
-            else
+                next(null, {status: 200, res: res});
+            else 
                 next({status: 400, msg: "Invalid request"}, null);
+                
     });
 }
 
 const get = (req, next) => {
 
     const dbConnect = database.getDb();
-    const id = new ObjectId(req.id);
+    const _id = new ObjectId(req._id);
 
     dbConnect
         .collection('risk')
-        .findOne({ _id: id }, ((err, res) => {
+        .findOne({ _id: _id }, ((err, res) => {
             if(err)
                 next({ status: 500, msg: err }, null);
             else if(!res)
                 next({status: 404, msg: "Not found"}, null);
             else
-                next(null, {status: 200, data: res});
+                next(null, {status: 200, risk: res});
         }));
 }
 
@@ -75,7 +76,7 @@ const all = (req, next) => {
         if (err) 
             next({status: 400, msg: err}, null);
         else 
-            next(null, {status: 200, data: result});
+            next(null, {status: 200, risks: result});
         
         });
 }

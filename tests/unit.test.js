@@ -34,8 +34,7 @@ describe('Test the auth call to ensure only valid tokens can POST risk', () => {
         it('should, fail to create a risk given empty token', async () => {
             await endPoint.post(application + '/api/' + version + '/risk')
                 .set({
-                    idToken: '',
-                    localId: ''
+                    idToken: ''
                 })
                 .send({
                     
@@ -50,8 +49,7 @@ describe('Test the auth call to ensure only valid tokens can POST risk', () => {
         it('should, fail to create a risk given un-authorised token', async () => {
             await endPoint.post(application + '/api/' + version + '/risk')
                 .set({
-                    idToken: wrongToken,
-                    localId: '6299c5f832fdb8b7ea025c66'
+                    idToken: wrongToken
                 })
                 .send({
                     
@@ -90,8 +88,7 @@ describe('Test the risk api POST methods', () => {
         it('should, create a risk given the right information', async () => {
             await endPoint.post(application + '/api/' + version + '/risk')
                 .set({
-                    idToken: idToken,
-                    localId: localId
+                    idToken: idToken
                 })
                 .send({
                     localId: localId,
@@ -111,7 +108,8 @@ describe('Test the risk api POST methods', () => {
                 .expect('Content-Type', /json/)
                 .expect(201)
                 .then(res => {
-                    response = res.body.data;
+                    console.log(res.body.risk);
+                    response = res.body.risk;
                 })
         });
     });
@@ -124,8 +122,7 @@ describe('Test the risk API GET methods', () => {
         await endPoint.get(application + '/api/' + version + '/risk')
             .set({
                 idToken: idToken,
-                localId: localId,
-                id: response.insertedId,
+                _id: response._id,
             })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -140,8 +137,7 @@ describe('Test the risk API GET methods', () => {
     it('should successfully return all risks when given no parameters', async () => {
         await endPoint.get(application + '/api/' + version + '/risks')
             .set({
-                idToken: idToken,
-                localId: localId
+                idToken: idToken
             })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -149,15 +145,14 @@ describe('Test the risk API GET methods', () => {
             .then(res => {
                 expect(res.body).toBeDefined();
                 expect(res.body.status).toBe(200);
-                expect(res.body.data).toHaveLength(2);
+                expect(res.body.risks).toHaveLength(2);
             })
     });
 
     it('should successfully return all risks using a text filter', async () => {
         await endPoint.get(application + '/api/' + version + '/risks')
             .set({
-                idToken: idToken,
-                localId: localId
+                idToken: idToken
             })
             .send({
                 filter: 'server'
@@ -168,7 +163,7 @@ describe('Test the risk API GET methods', () => {
             .then(res => {
                 expect(res.body).toBeDefined();
                 expect(res.body.status).toBe(200);
-                expect(res.body.data).toHaveLength(1);
+                expect(res.body.risks).toHaveLength(1);
             })
     });
 

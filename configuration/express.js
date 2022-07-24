@@ -6,7 +6,7 @@ const morgan = require('morgan');
 
 const allowCrossOriginRequests = (req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, X-Authorization, idToken, localId');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, X-Authorization, idToken, localId, param');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
     next();
 };

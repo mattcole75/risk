@@ -7,15 +7,14 @@ const axios = require('../../utility/axios');
 
 const post = (req, next) => {
 
-    const { idtoken, localid } = req.headers;
+    const { idtoken } = req.headers;
 
     let headers;
 
-    if(idtoken && localid) {
+    if(idtoken) {
         headers = {
             'Content-Type': 'application/json',
-            idToken: idtoken,
-            localId: localid
+            idToken: idtoken
         };
     } else {
         return next({status: 400, msg: 'Bad request'}, null);
@@ -33,11 +32,18 @@ const post = (req, next) => {
                     (err, res) => {
                     if(err) {
                         log.error({ type: "POST", version: version, status: err.status, message: err.msg });
-                        return(next(err, null));
+                        return (next(err, null));
                     }
                     else {
-                        log.info({ type: "POST", version: version, status: res.status, data: res });
-                        return(next(null, res));
+                        risk.get({_id: res.res.insertedId}, (err, getres) => {
+                            if (err) {
+                                log.error({ type: "GET", version: version, status: err.status, message: err.msg });
+                                return next(err, null);
+                            } else {
+                                log.info({ type: "POST", version: version, status: res.status, data: res });
+                                return (next(null, {status: res.status, risk: getres.risk}));
+                            }
+                        });
                     }
                 });
             } else {
@@ -61,18 +67,25 @@ const patch = (req, next) => {
         };
     else
         return next({status: 400, msg: 'Bad request'}, null);
-    
+        
         axios.post('/approvetransaction', { rules: { roles: ['user', 'administrator'] } }, { headers: headers })
         .then(response => {
             if(response.data.status === 200) {
-                const params = { id: req.headers.id, body: { ...req.body,  updated: moment().format() } };
+                const params = { _id: req.headers.param, body: { ...req.body,  updated: moment().format() } };
                 risk.patch(params, (err, res) => {
                     if(err) {
-                        log.error({ type: "POST", version: version, status: err.status, message: err.msg });
-                        next(err, null);
+                        log.error({ type: "PATCH", version: version, status: err.status, message: err.msg });
+                        return next(err, null);
                     } else {
-                        log.info({ type: "POST", version: version, status: res.status, data: res });
-                        next(null, res);
+                        risk.get({_id: params._id}, (err, getres) => {
+                            if (err) {
+                                log.error({ type: "GET", version: version, status: err.status, message: err.msg });
+                                return next(err, null);
+                            } else {
+                                log.info({ type: "PATCH", version: version, status: res.status, data: res });
+                                return (next(null, {status: res.status, risk: getres.risk}));
+                            }
+                        });
                     }
                 });
             } else {
@@ -83,21 +96,18 @@ const patch = (req, next) => {
             log.error({ type: "PATCH", version: version, status: err.response.status, message: err.response.statusText });
             return(next({status: err.response.status, msg: err.response.statusText}, null));
         });
-
-    
 }
 
 const get = (req, next) => {
 
-    const { localid, idtoken, id } = req.headers;
+    const { idtoken } = req.headers;
 
     let headers;
 
-    if (idtoken && localid)
+    if (idtoken)
         headers = {
             'Content-Type': 'application/json',
-            idToken: idtoken,
-            localId: localid
+            idToken: idtoken
         };
     else
         return next({status: 400, msg: 'Bad request'}, null);
@@ -126,15 +136,14 @@ const get = (req, next) => {
 
 const all = (req, next) => {
 
-    const { localid, idtoken } = req.headers;
+    const { idtoken } = req.headers;
 
     let headers;
 
-    if (idtoken && localid)
+    if (idtoken)
         headers = {
             'Content-Type': 'application/json',
-            idToken: idtoken,
-            localId: localid
+            idToken: idtoken
         };
     else
         return next({status: 400, msg: 'Bad request'}, null);
